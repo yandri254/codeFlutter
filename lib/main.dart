@@ -21,22 +21,39 @@ class TaskFlowApp extends StatelessWidget {
   }
 }
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
+
+  @override
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
+  int _pendingTasks = 3;
+
+  void _addTask() {
+    setState(() {
+      _pendingTasks++;
+    });
+  }
+
+  void _completeTask() {
+    if (_pendingTasks == 0) return;
+
+    setState(() {
+      _pendingTasks--;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     const studentName = 'Yandri Macias';
-    const pendingTasks = 3;
     const courseName = 'Desarrollo de aplicaciones móviles';
     const motivationalMessage = '¡Organiza tus tareas y alcanza tus metas hoy!';
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('TaskFlow'),
-        centerTitle: true,
-      ),
-      body: Padding(
+      appBar: AppBar(title: const Text('TaskFlow'), centerTitle: true),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,10 +67,8 @@ class WelcomeScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               motivationalMessage,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.indigo,
-                    fontWeight: FontWeight.w500,
-                  ),
+              style: Theme.of(context).textTheme.bodyLarge
+                  ?.copyWith(color: Colors.indigo, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 12),
             Text('Bienvenido/a a $courseName.'),
@@ -61,11 +76,31 @@ class WelcomeScreen extends StatelessWidget {
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(20),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.pending_actions),
-                    const SizedBox(width: 12),
-                    Text('Tareas pendientes: $pendingTasks'),
+                    Text(
+                      'Tareas pendientes: $_pendingTasks',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        onPressed: _addTask,
+                        icon: const Icon(Icons.add),
+                        label: const Text('Agregar tarea'),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: _pendingTasks == 0 ? null : _completeTask,
+                        icon: const Icon(Icons.check),
+                        label: const Text('Completar tarea'),
+                      ),
+                    ),
                   ],
                 ),
               ),
